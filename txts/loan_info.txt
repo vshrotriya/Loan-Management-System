@@ -1,0 +1,29 @@
+{"EL":
+{
+    "loan_type" : "Education Loan",
+    "interest" : "8%",
+    "eligibility_criteria" : "1. Malaysian Citizenship \n\t\t2. Secured at least 50% marks during HSC & Graduation \n\t\t3. Who have obtained admission to career-oriented courses e.g. Medicine, Engineering, Management etc., either at the graduate or post-graduate level \n\t\t4. Secured admission in India or Abroad through entrance test / merit based selection process post completion of HSC (10+2) \n\t\t5. Documents displaying regular income is mandatory for the co-applicant",
+    "time_period" : "3-5 years"
+},
+"CL":
+{
+    "loan_type" : "Car Loan",
+    "interest" : "12%",
+    "eligibility_criteria" : "1. Employees of private limited companies, employees from public sector undertakings, including central, state and local bodies. \n\t\t2. Individuals who are a minimum of 21 years of age at the time of applying for the loan, and no older than 60 at the end of the loan tenure. \n\t\t3. Individuals who have had a job for at least 2 years, with a minimum of 1 year with the current employer.\n\t\t4. Those who earn a minimum of Rs. 3,00,000 per year, including the income of the spouse/co-applicant.\n\t\t5. Individuals who have a telephone/post-paid mobile",
+    "time_period" : "8-12 years"
+},
+"HL":
+{
+    "loan_type" : "Home Loan",
+    "interest" : "7%",
+    "eligibility_criteria" : "1. Present Age and Remaining Working Years: The age of the applicant plays a major role in determining home loan eligibility. The maximum loan term is generally capped at 30 years.\n\t\t2. Age Limit : 21 to 65 years .\n\t\t3. Minimum Salary: ₹10,000 p.m.\n\t\t4. Minimum business income: ₹2 lac p.a.\n\t\t5. Maximum Loan Term: 30 years.\n\t\t6. Financial Position: The present and the future income of applicant(s) has a significant impact on determining the loan amount.\n\t\t7. Past and Present Credit History and Credit Score: A clean repayment record is considered positive.\n\t\t8. Other Financial Obligations: Existing liabilities such as a car loan, credit card debt, etc.",
+    "time_period" : "15 years"
+},
+"PL":
+{
+    "loan_type" : "Personal Loan",
+    "interest" : "6%",
+    "eligibility_criteria" : "1. Employees of private limited companies, employees from public sector undertakings, including central, state and local bodies\n\t\t2. Individuals between 21 and 60 years of age\n\t\t3. Individuals who have had a job for at least 2 years, with a minimum of 1 year with the current employer\n\t\t4. Those who earn a minimum of 25,000 net income per month.",
+    "time_period" : "5 years"
+}
+}

@@ -1,0 +1,13 @@
+{"user1@email.com": {"email": "user1@email.com", "name": "user1", "adress": "xyz", "contact": "1475642346", "gender": "M", "dob": "23/2/2000", "loan_type": "EL", "loan_term": "5", "instal_amt": 1500, "user_id": "545478", "password": "456", "re_pass": "456"}, "user2@email.com": {"email": "user2@email.com", "name": "user2", "adress": "abc", "contact": "5465435", "gender": "M", "dob": "21/05/2004", "loan_type": "CL", "loan_term": "5", "instal_amt": 1478, "user_id": "154651", "password": "456", "re_pass": "456"}, "user3@email.com": {"email": "user3@email.com", "name": "user3", "adress": "qwerty", "contact": "2564512", "gender": "M", "dob": "02/02/1999", "loan_type": "CL", "loan_term": "15", "instal_amt": 1500, "user_id": "465465", "password": "user3@123", "re_pass": "user3@123"}, "user4@gmail.com": {"email": "user4@gmail.com", "name": "user4", "adress": "xyz", "contact": "44654988987", "gender": "M", "dob": "21/03/2014", "loan_type": "HL", "loan_term": "5", "instal_amt": 2555, "user_id": "478962", "password": "456", "re_pass": "456"}}  "name":"user4",
+      "adress":"xyz",
+      "contact":"44654988987",
+      "gender":"M",
+      "dob":"21/03/2014",
+      "loan_type":"HL",
+      "loan_term":"5",
+      "instal_amt":2555,
+      "user_id":"478962",
+      "password":"456",
+      "re_pass":"456"
+   }
+}
