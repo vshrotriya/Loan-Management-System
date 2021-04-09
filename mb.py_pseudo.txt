@@ -1,0 +1,1002 @@
+IMPORT os,sys
+
+IMPORT json
+
+from random IMPORT randint
+
+from datetime IMPORT timedelta, date
+
+IMPORT datetime
+
+from enum IMPORT Enum
+
+IMPORT locale
+
+
+
+# function to approve new registration requests
+
+DEFINE FUNCTION approve_req(data):
+
+    with open('./txts/reg_user.txt','r+') as f:
+
+        TRY:
+
+            SET obj TO json.load(f)
+
+        EXCEPT:
+
+            SET obj TO {}
+
+        SET data['loan_id'] TO randint(100000, 999999)
+
+        SET end_date TO date.today() + timedelta(days=randint(1,10))
+
+        SET data['instal_date'] TO str(end_date)
+
+        SET data['instal_amt'] TO randint(20,40)*100
+
+        SET data['transaction_history'] TO {}
+
+        SET info TO {}
+
+        SET email TO data['email']
+		
+		SET info[email] TO data
+
+        obj.update(info)
+
+        f.seek(0)
+
+        json.dump(obj, f)
+
+        RETURN True
+
+        
+
+        
+
+# function to handle new registration requests
+
+DEFINE FUNCTION new_requests():
+
+# File Handling to see new requests
+
+    with open('./txts/new_user.txt') as json_file:
+
+        SET data TO json.load(json_file)
+
+        FOR lines IN data:
+
+        # Printing the new requests
+
+            OUTPUT(data[lines])
+			
+
+        SET choice TO int(INPUT('''
+
+            ============================
+
+            | 1. Approve Requests       |
+
+            | 2. Go to Previous Menu    |
+
+            ============================
+
+        '''))
+
+        while(True):
+
+            IF (choice EQUALS 1):
+
+                SET email TO INPUT("Enter Email id of the customer : ")
+
+                SET flag TO approve_req(data[email])
+
+                IF flag:
+
+                    SET data[email] TO {}
+
+            ELSE:
+
+                RETURN
+
+            SET choice TO int(INPUT('''
+
+            ============================
+
+            | 1. Approve Requests       |
+
+            | 2. Go to Previous Menu    |
+
+            ============================
+
+        '''))
+
+
+
+
+
+# Function to see Transaction customer specific using email id 
+
+DEFINE FUNCTION customer_specific_transaction():
+
+    with open('./txts/reg_user.txt','r+') as f:
+
+        TRY:
+
+            SET obj TO json.load(f)
+
+        EXCEPT:
+
+            OUTPUT("No customer is registered yet")
+
+            SET obj TO {}
+
+            RETURN
+
+        SET choice TO INPUT("Enter Customer Email id : ")
+
+        SET data TO obj[choice]
+
+        OUTPUT(data['transaction_history'])
+
+
+
+# Function to see Transaction loan specific using email id 
+
+DEFINE FUNCTION loan_specific_transaction():
+
+    with open('./txts/reg_user.txt','r+') as f:
+
+        TRY:
+
+            SET obj TO json.load(f)
+
+        EXCEPT:
+
+            OUTPUT("No loan transaction is done yet")
+
+            SET obj TO {}
+
+            RETURN
+
+        SET choice TO INPUT("Enter Code of Loan (EL , HL , CL , PL) : ")
+
+        FOR lines IN obj:
+
+            SET info TO obj[lines]
+
+            if(info['loan_type']==choice):
+
+                OUTPUT(info['transaction_history'])
+
+
+
+# Function to see all Transactions
+
+DEFINE FUNCTION customer_all_transaction():
+
+    with open('./txts/reg_user.txt','r+') as f:
+
+        TRY:
+
+            SET obj TO json.load(f)
+
+        EXCEPT:
+
+            OUTPUT("No transaction is done yet")
+
+            SET obj TO {}
+
+            RETURN
+
+    FOR lines IN obj:
+
+        SET info TO obj[lines]
+
+        OUTPUT(lines)
+
+        OUTPUT(info['transaction_history'])
+
+
+
+
+
+# Function to see all loan Transactions 
+
+DEFINE FUNCTION loan_all_transaction():
+
+    with open('./txts/reg_user.txt','r+') as f:
+
+        OUTPUT('yes')
+
+        SET obj TO json.load(f)
+
+        SET loan_type TO ['EL','PL','CL','HL']
+
+        FOR data IN loan_type:
+
+            OUTPUT(data)
+
+            FOR lines IN obj:
+
+                SET info TO obj[lines]
+
+                if(info['loan_type']==data):
+
+                    OUTPUT(info['transaction_history'])
+
+
+
+
+
+# Admin Panel 
+
+DEFINE FUNCTION admin():
+
+    if(login('admin')==True):
+
+        OUTPUT('''
+
+        ======================
+
+        Welcome to Admin Panel
+
+        ======================
+
+        ''')
+
+        while(True):
+
+            # Menu driven approach FOR admin panel
+
+            OUTPUT(''' 
+
+            ==================================================================
+
+            | Enter What you want to do                                       |
+
+            | 1. See and Approve new Requests                                 |
+
+            | 2. See all transaction made by specific customer using email id |
+
+            | 3. See all transactions of specific Loan type (EL/CL/HL/PL)     |
+
+            | 4. See all transaction of all customer                          |
+
+            | 5. See all transaction of all loan types                        |
+
+            | 6. Logout                                                       |
+
+            ==================================================================
+
+            ''')
+
+            # Taking INPUT from user
+
+            SET choice TO int(INPUT("Enter your Choice : "))
+
+            # Calling functions based on INPUT from the user
+
+            if(choice EQUALS 1):
+
+                new_requests()
+
+            if(choice EQUALS 2):
+
+                customer_specific_transaction()
+
+            if(choice EQUALS 3):
+
+                loan_specific_transaction()
+
+            if(choice EQUALS 4):
+
+                customer_all_transaction()
+
+            if(choice EQUALS 5):
+
+                loan_all_transaction()
+
+            if(choice EQUALS 6):
+
+                break
+
+    ELSE:
+
+        OUTPUT('Invalid Login Credentials \n Try again')
+
+
+
+# Fuunction to OUTPUT loan details of logged IN customer 
+
+DEFINE FUNCTION loan_details_user(email):
+
+    with open('./txts/reg_user.txt') as json_file:
+
+        SET data TO json.load(json_file)
+
+        SET data TO data[email]
+
+        OUTPUT(f'''
+
+         ===========================================
+
+        | Loan Details                              |
+
+        | Loan type           : {data['loan_type']} |
+
+        | Loan term           : {data['loan_term']} |
+
+        | Instalment Amount   : {data['instal_amt']}|
+
+        | Loan ID             : {data['loan_id']}   |
+
+         ===========================================
+
+        ''')
+
+
+
+# Function to pay Instalment by Reg user 
+
+DEFINE FUNCTION pay_instalment(email):
+
+    with open('./txts/reg_user.txt','r+') as json_file:
+
+        SET data TO json.load(json_file)
+
+        SET info TO data[email]
+
+        SET instal_amt TO int(INPUT('Enter the Instalment Amount'))
+
+        SET loan_stat TO info['loan_status']
+
+        SET left TO  int(loan_stat['Left_Amt'])
+
+        # Menu driven Approach
+
+        SET choice TO int(INPUT('''
+
+         ========================
+
+        | Enter                  |
+
+        | 1. Complete Payment    |
+
+        | 2. Cancel              |
+
+         ========================
+
+         '''))
+
+        if(choice EQUALS 1):
+
+            # Updating data IN left balance 
+
+            SET left TO left - instal_amt
+
+            SET loan_stat['Left_Amt'] TO left
+
+            SET info['loan_status'] TO loan_stat
+
+            SET data[email] TO info
+
+            json.dumps(data)
+
+        ELSE:
+
+            RETURN
+
+
+
+# Function to see own transactions 
+
+DEFINE FUNCTION see_transactions_user(email):
+
+    with open('./txts/reg_user.txt') as json_file:
+
+        SET data TO json.load(json_file)
+
+        SET data TO data[email]
+
+        OUTPUT(data['transaction_history'])
+
+
+
+# Function to see loan status 
+
+DEFINE FUNCTION loan_status_user(email):
+
+    with open('./txts/reg_user.txt') as json_file:
+
+        SET data TO json.load(json_file)
+
+        SET data TO data[email]
+
+        SET data TO data['loan_status']
+
+        OUTPUT(f'''
+
+         ============================================
+
+        | Loan Status                                |
+
+        | Initial Amount   : {data['Initial_Amt']}   |
+
+        | Left Amount      : {data['Left_Amt']}      |
+
+         ============================================
+
+        ''')
+
+
+
+# User Panel 
+
+DEFINE FUNCTION user():
+
+    SET email,flag TO login('user')
+
+    if(flag==True):
+
+        OUTPUT('Welcome to User panel')
+
+        while(True):
+
+            # Menu driven approach FOR user panel
+
+            OUTPUT(''' 
+
+             =============================
+
+            | Enter What you want to do   |
+
+            | 1. See Loan Details         |
+
+            | 2. Pay Loan Instalment      |
+
+            | 3. See Transactions         |
+
+            | 4. Check status of Loan     |
+
+            | 5. Logout                   |
+
+             =============================
+
+            ''')
+
+            SET choice TO int(INPUT("Enter your Choice : "))
+
+            # Calling functions based on INPUT from the user
+
+            if(choice EQUALS 1):
+
+                loan_details_user(email)
+
+            if(choice EQUALS 2):
+
+                pay_instalment(email)
+
+            if(choice EQUALS 3):
+
+                see_transactions_user(email)
+
+            if(choice EQUALS 4):
+
+                loan_status_user(email)
+
+            if(choice EQUALS 5):
+
+                break
+
+    ELSE:
+
+        OUTPUT('Invalid Login Credentials \n Try again')
+
+
+
+# Function to get data from user FOR registration purpose
+
+DEFINE FUNCTION get_data():
+
+    SET data TO {}
+
+    SET email TO INPUT("Enter your Email ID : ")
+
+    
+
+    SET data[email] TO {
+
+        "email" : email,
+
+       "name" : INPUT("Enter your name : "),
+
+       "adress" : INPUT("Enter your address : "),
+
+       "contact" : INPUT("Enter your contact number : "),
+
+       "gender" : INPUT('''
+
+       Enter Gender as 
+
+       M FOR Male
+
+       F FOR Female
+
+       T FOR Transgender 
+
+       O FOR Other
+
+
+
+       '''),
+
+       "dob" : INPUT("Enter your Date of Birth as [dd/mm/yyyy] : "),
+
+       "loan_type" : INPUT('''
+
+       Enter code of type of loan you want
+
+        1. Education Loan (EL)
+
+        2. Car Loan (CL)
+
+        3. Home Loan (HL)
+
+        4. Personal Loan (PL)
+
+
+
+       '''),
+
+       "loan_term" : INPUT("Enter the time period of loan IN years : "),
+
+       "instal_amt" : int(INPUT("Enter the Instalment Amount : ")),
+
+       "user_id" : INPUT("Enter user id : "),
+
+       "password" : INPUT("Enter Password : "),
+
+       "re_pass" : INPUT("Re-Enter Password : "),
+
+    }
+
+    SET update TO data[email]
+
+    while(update['password'] != update['re_pass']):
+
+        SET update['password'] TO INPUT("Enter Password")
+
+        SET update['re_pass'] TO INPUT("Re-Enter Password")
+
+    SET data[email] TO update
+
+    RETURN data
+
+
+
+# Function to handle Registration process
+
+DEFINE FUNCTION register():
+
+    SET data TO get_data()
+
+    with open("./txts/new_user.txt", "r+") as f:
+
+        SET obj TO json.load(f)
+
+        obj.update(data)
+
+        f.seek(0)
+
+        json.dump(obj, f)
+
+
+
+# Function to OUTPUT loan Details 
+
+DEFINE FUNCTION loan_details():
+
+# Menu Driven approach
+
+    OUTPUT('''
+
+             ====================================================
+
+            | Enter What type  of loan details you want to see   |
+
+            | 1. Education Loan (EL)                             |
+
+            | 2. Car Loan (CL)                                   |
+
+            | 3. Home Loan (HL)                                  |
+
+            | 4. Personal Loan (PL)                              |
+
+             ====================================================
+
+            ''')
+
+    SET choice TO INPUT("Enter your Choice code such as EL , CL , HL , PL : ")
+
+    with open('./txts/loan_info.txt') as json_file:
+
+        SET data TO json.load(json_file)
+
+        SET info TO data[choice]
+
+# Printing loan info like loan type, ROI, Eligibility Criteria, Time Period
+
+        OUTPUT(f'''
+
+            Loan Type 
+
+                {info['loan_type']}
+
+            Rate of Interest
+
+                {info['interest']} 
+
+            Eligibility Criteria 
+
+                {info['eligibility_criteria']}
+
+            Time Period
+
+                {info['time_period']}
+
+        ''')
+
+
+
+# Function to handle loan calculation
+
+
+
+DEFINE FUNCTION loan_calc():
+
+    SET amt TO int(INPUT('Enter the Loan Amount : '))
+
+    SET loan_type TO INPUT('Enter code of Loan type such as EL,CL,HL,PL : ')
+
+    SET instal_amt TO int(INPUT('Enter the Instalment amount to pay per month : '))
+
+    SET pay_day TO int(INPUT('Enter day of month you want to make payment on : '))
+
+    SET date_end TO date.today() + timedelta(days=randint(1,10))
+
+    IF loan_type EQUALS 'EL':
+
+        SET car TO Loan('Education Loan', amt, 0.08, date_end)
+
+        car.pay(instal_amt, pay_day, Loan.PaymentFrequency.monthly)
+
+    IF loan_type EQUALS 'CL':
+
+        SET car TO Loan('Car Loan', amt, 0.12, date_end)
+
+        car.pay(instal_amt, pay_day, Loan.PaymentFrequency.monthly)
+
+    IF loan_type EQUALS 'HL':
+
+        SET car TO Loan('Home Loan', amt, 0.07, date_end)
+
+        car.pay(instal_amt, pay_day, Loan.PaymentFrequency.monthly)
+
+    IF loan_type EQUALS 'PL':
+
+        SET car TO Loan('Personal Loan', amt, 0.06, date_end)
+
+        car.pay(instal_amt, pay_day, Loan.PaymentFrequency.monthly)     
+
+
+
+# New User Panel
+
+DEFINE FUNCTION new_user():
+
+    while(True):
+
+    # Menu Driven Approach 
+
+        OUTPUT(''' 
+
+         ================================================
+
+        | Enter What you want to do                      |
+
+        | 1. Register                                    |
+
+        | 2. Check Loan Details                          |
+
+        | 3. Calculate Loan Amount using Loan Calculator |
+
+        | 4. Return to main menu                         |
+
+         ================================================
+
+        ''')
+
+        SET choice TO int(INPUT("Enter your Choice : "))
+
+        if(choice EQUALS 1):
+
+            register()
+
+        if(choice EQUALS 2):
+
+            loan_details()
+
+        if(choice EQUALS 3):
+
+            loan_calc()
+
+        if(choice EQUALS 4):
+
+            break
+
+
+
+# function to handle login requests from admin and user 
+
+DEFINE FUNCTION login(user_type):
+
+    SET user_email TO INPUT("Email : ")
+
+    SET password TO INPUT("Password : ")
+
+    # snippet to handle admin login
+
+    if(user_type EQUALS 'admin'):
+
+        with open('./txts/admin.txt') as json_file:
+
+            SET data TO json.load(json_file)
+
+            # verifying IF login credentials are valid 
+
+            if(user_email EQUALS data['admin_email']and password EQUALS data['admin_password']):
+
+                RETURN True
+
+            ELSE:
+
+                RETURN False 
+
+    ELSE:
+
+    # snippet to handle user login 
+
+        with open('./txts/reg_user.txt') as json_file:
+
+            SET data TO json.load(json_file)
+
+            SET data TO data[user_email]
+
+            TRY:
+
+            # verifying IF login credentials are valid 
+
+                if(user_email EQUALS data['email']and password EQUALS data['password']):
+
+                    RETURN user_email , True
+
+            EXCEPT:
+
+                    RETURN False
+
+
+
+locale.setlocale(locale.LC_ALL, '')
+
+
+
+# Making a Loan DEFINE CLASS 
+
+DEFINE CLASS Loan:
+
+    # Setting PaymentFrequency
+
+    DEFINE CLASS PaymentFrequency(Enum):
+
+        SET monthly TO 1
+
+    # Class Constructor
+
+    DEFINE FUNCTION __init__(self, name, starting_balance, interest_rate, date_disbursed):
+
+        SET self.name TO name
+
+        SET self.starting_balance TO starting_balance
+
+        SET self.interest_rate TO interest_rate
+
+        SET self.date_disbursed TO date_disbursed
+
+    # Function FOR due date calculation
+
+    DEFINE FUNCTION first_due_date(today, payment_day):
+
+        IF today.day <= payment_day:
+
+            SET due_date TO datetime.date(today.year, today.month, payment_day)
+
+        ELSEIF today.day > payment_day:
+
+            IF today.month EQUALS 12:
+
+                SET due_date TO datetime.date(today.year + 1, 1, payment_day)
+
+            ELSE:
+
+                SET due_date TO datetime.date(today.year, today.month + 1, payment_day)
+
+
+
+        RETURN due_date
+
+    
+
+    # Function to OUTPUT Loan Details 
+
+    DEFINE FUNCTION pay(self, payment_amount, payment_day, payment_frequency):
+
+        SET current_balance TO self.starting_balance
+
+        SET current_date TO self.date_disbursed
+
+        SET payment_due_date TO Loan.first_due_date(current_date, payment_day)
+
+
+
+        SET total_paid TO 0.0
+
+        SET total_interest TO 0.0
+
+        SET total_payment_count TO 0
+
+
+
+        SET header TO self.name.upper() + ': ' + payment_frequency.name + ' payments of ' + locale.currency(payment_amount, grouping TO True)
+
+        OUTPUT(len(header) * '=')
+
+        OUTPUT(header)
+
+        OUTPUT(len(header) * '=')
+
+        SET OUTPUT('      Balance:', locale.currency(self.starting_balance, grouping TO True))
+
+        OUTPUT('First payment:', payment_due_date.isoformat())
+
+
+
+        WHILE current_balance > 0:
+
+            # Accumulate interest.
+
+
+
+            SET interest_today TO current_balance * (self.interest_rate / 365)
+
+            current_balance += interest_today
+
+            total_interest += interest_today
+
+
+
+            # Make a payment IF one is due today.
+
+
+
+            IF current_date EQUALS payment_due_date:
+
+                IF current_balance < payment_amount:
+
+                    total_paid += current_balance
+
+                    SET current_balance TO 0.0
+
+                ELSE:
+
+                    current_balance -= payment_amount
+
+                    total_paid += payment_amount
+
+
+
+                total_payment_count += 1
+
+
+
+                # Forward the due date.
+
+
+
+                IF payment_frequency EQUALS Loan.PaymentFrequency.monthly:
+
+                    IF current_date.month EQUALS 12:
+
+                        SET payment_due_date TO datetime.date(current_date.year + 1, 1, payment_day)
+
+                    ELSE:
+
+                        SET payment_due_date TO datetime.date(current_date.year, current_date.month + 1, payment_day)
+
+                ELSEIF payment_frequency EQUALS Loan.PaymentFrequency.biweekly:
+
+                    SET payment_due_date += datetime.timedelta(weeks TO 2)
+
+                ELSEIF payment_frequency EQUALS Loan.PaymentFrequency.weekly:
+
+                    SET payment_due_date += datetime.timedelta(weeks TO 1)
+
+            IF current_balance > 0:
+
+                SET current_date += datetime.timedelta(days TO 1)
+
+
+
+        OUTPUT(' Last payment:', current_date.isoformat(), '(' + str(total_payment_count) + ' payments)')
+
+        OUTPUT('     Duration:', "%.1f" % ((current_date - self.date_disbursed).days / 365), 'years')
+
+        SET OUTPUT('   Total paid:', locale.currency(total_paid, grouping TO True))
+
+        SET OUTPUT('Interest paid:', locale.currency(total_interest, grouping TO True), '(' + "%.2f" % ((total_interest / total_paid) * 100) + '%)')
+
+
+
+OUTPUT('''
+
+    ===============================================================
+
+    Welcome to Malaysia Bank Online Loan Management System (MBOLMS)
+
+    ===============================================================
+
+    ''')
+
+while(True):
+
+# Menu Driven approach 
+
+    OUTPUT('''
+
+    =======================
+
+    | 1. Admin             |
+
+    | 2. Registered User   |
+
+    | 3. New User          |
+
+    | 4. Exit              |
+
+    =======================
+
+    ''')
+
+    # Taking INPUT from user 
+
+    SET choice TO int(INPUT("Enter your Choice : "))
+
+    if(choice EQUALS 1):
+
+        admin()
+
+    if(choice EQUALS 2):
+
+        user()
+
+    if(choice EQUALS 3):
+
+        new_user()
+
+    if(choice ==4):
+
+        OUTPUT("Thanks FOR Visiting Malaysia Bank")
+
+        break
